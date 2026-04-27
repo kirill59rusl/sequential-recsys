@@ -1,4 +1,5 @@
 import polars as pl
+from preprocess import k_core_filter
 
 def print_quantiles(df,col,describe):
     uq50=df[col].quantile(0.5) 
@@ -132,34 +133,9 @@ eventskcore=(pl.scan_csv("dataset/raw/events.csv")) #lazy execution
 prev=-1
 itera=0 # количество проходов k-core для оценки convergence
 print("K-core filtering: ")
-while True:
-    itera+=1
-    df=(eventskcore
-        .join(eventskcore.group_by("visitorid")
-              .len().filter(
-                  pl.col("len")>=5
-              ),on='visitorid',how='semi') #semi - как inner 
-                                           #но возвращает только колонки из первой таблицы(проверка на входимость)
-        .join(eventskcore.group_by("itemid")
-              .len().filter(
-                  pl.col("len")>=5
-              ),on='itemid',how='semi')
-        .collect()
-    )
-    curr=df.height
-    print(
-        f"{itera}: "
-        f"rows={curr} "
-        f"users={df['visitorid'].n_unique()} "
-        f"items={df['itemid'].n_unique()}"
-    )
-    
-    if curr==prev:
-        break
-    eventskcore=df.lazy()
-    prev=curr
+events=k_core_filter(eventskcore,verbose=True).collect()
 print("---------")
-events=df.sort(["visitorid", "timestamp"])
+events=events.sort(["visitorid", "timestamp"])
 events=events.with_columns(((pl.col("timestamp")-pl.col("timestamp").shift(1))/1000/60)
                            .over("visitorid").alias("gap"))
 gap=30 #больше 30 минут - сессия заканчивается
