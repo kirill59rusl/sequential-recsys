@@ -131,7 +131,7 @@ print("--------")
 eventskcore=(pl.scan_csv("dataset/raw/events.csv")) #lazy execution
 prev=-1
 itera=0 # количество проходов k-core для оценки convergence
-
+print("K-core filtering: ")
 while True:
     itera+=1
     df=(eventskcore
@@ -147,11 +147,18 @@ while True:
         .collect()
     )
     curr=df.height
+    print(
+        f"{itera}: "
+        f"rows={curr} "
+        f"users={df['visitorid'].n_unique()} "
+        f"items={df['itemid'].n_unique()}"
+    )
+    
     if curr==prev:
         break
     eventskcore=df.lazy()
     prev=curr
-print(f"Кол-во итераций k-core: {itera}")
+print("---------")
 events=df.sort(["visitorid", "timestamp"])
 events=events.with_columns(((pl.col("timestamp")-pl.col("timestamp").shift(1))/1000/60)
                            .over("visitorid").alias("gap"))
