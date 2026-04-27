@@ -10,3 +10,6 @@
         датасет был sparse -> 781k rows
         а также interaction/user=~12     int./item=~22
         =>filtered data более плотная и информативная по всем объектам и контекстам=>трансформер модель обоснована
+Описание full_data.parquet: columns[user_id, item_id, event_id, delta_minute, 
+                                    delta_bucket, session, new_session, timestamp]
+Сделал пока модель датасета в pytorch (навайбкодил) уже спать охота потом разберусь(стереть)
