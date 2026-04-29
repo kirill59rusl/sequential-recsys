@@ -10,6 +10,24 @@
         датасет был sparse -> 781k rows
         а также interaction/user=~12     int./item=~22
         =>filtered data более плотная и информативная по всем объектам и контекстам=>трансформер модель обоснована
+
+    -features: delta_bucket - разные сессии по-разному влияют, разделение на временные рамки
+
 Описание full_data.parquet: columns[user_id, item_id, event_id, delta_minute, 
                                     delta_bucket, session, new_session, timestamp]
-Сделал пока модель датасета в pytorch (навайбкодил) уже спать охота потом разберусь(стереть)
+
+Описание sequence.parquet: columns['user_id'......]
+
+...Сделал пока модель датасета в pytorch (навайбкодил) уже спать охота потом разберусь(стереть)
+
+Dataset:
+    -последовательности event,item,session,delta,bucket для каждого юзера(user_id в обучение не входит), 
+        seq_len - длина последовательности
+    -features - последовательности длиной от начала до q<=seq_len не включительно, q-ый item - target
+    -разделение датасета leave-one-out ([:-2] для val и [:-1] для test, все остальные срезы для train)
+
+Baseline(Top-K Popular):
+    -берём k популярный и рекомендуем всем
+    -метрики получились такие: 
+        Hitrate@10: 0.008519282076158137 | MRR@10: 0.0036199008779414584 | NDCG@10: 0.004745752779482754
+    

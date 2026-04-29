@@ -21,10 +21,12 @@ def build_sequences(lf:pl.LazyFrame):
 
 
 
+def main():
+    dataset=pl.scan_parquet("dataset/processed/full_data.parquet")
+    dataset=build_sequences(dataset).collect()
+    dataset.write_parquet("dataset/processed/sequences.parquet")
 
-dataset=pl.scan_parquet("dataset/processed/full_data.parquet")
-dataset=build_sequences(dataset).collect()
-dataset.write_parquet("dataset/processed/sequences.parquet")
-
+if __name__=='main':
+    main()
 
 

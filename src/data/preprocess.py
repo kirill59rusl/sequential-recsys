@@ -99,6 +99,12 @@ def build_dataset(lf:pl.LazyFrame):
     df=lf.collect()
     return df
 
-events=pl.scan_csv("dataset/raw/events.csv")
-events=build_dataset(events)
-events.write_parquet("dataset/processed/full_data.parquet")
+
+def main():
+
+    events=pl.scan_csv("dataset/raw/events.csv")
+    events=build_dataset(events)
+    events.write_parquet("dataset/processed/full_data.parquet")
+
+if __name__=='main':
+    main()
