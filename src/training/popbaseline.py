@@ -43,4 +43,4 @@ with torch.no_grad():
 answ=metrics.compute()
 
 
-print(f"Hitrate@10: {answ['hitrate']} | MRR@10: {answ['mrr']} | NDCG@10: {answ['ndcg']}")
+print(f"Hitrate@{K}: {answ['hitrate']} | MRR@{K}: {answ['mrr']} | NDCG@{K}: {answ['ndcg']}")

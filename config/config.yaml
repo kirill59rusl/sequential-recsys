@@ -1,0 +1,5 @@
+model: lgbm
+params:
+ K: 10
+ BATCH_SIZE: 32
+ EVENT_WEIGHTS:{}
