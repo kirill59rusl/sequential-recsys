@@ -90,7 +90,7 @@ def encode_action(lf:pl.LazyFrame,mapping=EVENT_MAP):
 
 def build_dataset(lf:pl.LazyFrame):
     
-    lf=k_core_filter(lf).drop("transactionid")
+    lf=k_core_filter(lf,k=3).drop("transactionid")
     lf=sessionize(lf)
     lf=encode_ids(lf).drop('visitorid')
     lf=encode_ids(lf,'itemid','item_id').drop('itemid')
@@ -106,5 +106,5 @@ def main():
     events=build_dataset(events)
     events.write_parquet("dataset/processed/full_data.parquet")
 
-if __name__=='main':
+if __name__=='__main__':
     main()

@@ -133,7 +133,7 @@ eventskcore=(pl.scan_csv("dataset/raw/events.csv")) #lazy execution
 prev=-1
 itera=0 # количество проходов k-core для оценки convergence
 print("K-core filtering: ")
-events=k_core_filter(eventskcore,verbose=True).collect()
+events=k_core_filter(eventskcore,k=3,verbose=True).collect()
 print("---------")
 events=events.sort(["visitorid", "timestamp"])
 events=events.with_columns(((pl.col("timestamp")-pl.col("timestamp").shift(1))/1000/60)

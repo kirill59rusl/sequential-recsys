@@ -12,7 +12,7 @@ class Metrics_k:
         self.n_samples=0
     
     def update(self,target,pred):
-        pred = pred[:, :self.k]
+        _, pred = torch.topk(pred, self.k, dim=1)
 
         self.sum['hitrate']+=Metrics_k.hitrate_k(target,pred).item()
         self.sum['mrr']+=Metrics_k.mrr_k(target,pred).item()

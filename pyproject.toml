@@ -11,6 +11,7 @@ dependencies = [
     "polars>=1.40.1",
     "pydantic>=2.13.3",
     "torch>=2.11.0",
+    "tqdm>=4.67.3",
     "wandb>=0.26.1",
 ]
 

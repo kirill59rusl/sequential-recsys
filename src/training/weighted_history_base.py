@@ -6,7 +6,7 @@ import polars as pl
 from src.utils.metrics import Metrics_k
 
 LOADER_BATCH=32
-K=60
+K=5
 EVENT_WEIGHTS={0:1,1:3,2:5} # view - 1 ; addtocart - 3 ; view - 5
 
 top_k_items=(pl.scan_parquet("dataset/processed/full_data.parquet")
@@ -21,7 +21,7 @@ top_k_items=(pl.scan_parquet("dataset/processed/full_data.parquet")
 
 dataset=pl.read_parquet("dataset/processed/sequences.parquet")
 
-datatest=SequenceDataset(dataset, mode='test')
+datatest=SequenceDataset(dataset, mode='val')
 
 loadertest = DataLoader(
     datatest,

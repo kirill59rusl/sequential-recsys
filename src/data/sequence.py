@@ -26,7 +26,7 @@ def main():
     dataset=build_sequences(dataset).collect()
     dataset.write_parquet("dataset/processed/sequences.parquet")
 
-if __name__=='main':
+if __name__=='__main__':
     main()
 
 
