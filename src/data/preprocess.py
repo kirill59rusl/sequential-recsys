@@ -51,7 +51,7 @@ def encode_ids(lf:pl.LazyFrame,col='visitorid',name='user_id'):
     mapping=(lf.select(col)
         .unique()
         .sort(col)
-        .with_row_index(name)
+        .with_row_index(name,offset=1)
     )
     #сохраняем кодировку в parquet file
     to_save=mapping.collect()

@@ -12,13 +12,14 @@ class Metrics_k:
         self.n_samples=0
     
     def update(self,target,pred):
-        _, pred = torch.topk(pred, self.k, dim=1)
 
-        self.sum['hitrate']+=Metrics_k.hitrate_k(target,pred).item()
-        self.sum['mrr']+=Metrics_k.mrr_k(target,pred).item()
-        self.sum['ndcg']+=Metrics_k.ndcg_k(target,pred).item()
-        self.n_samples+=target.size(0)
+        if pred.shape[1] != self.k:
+            _, pred = torch.topk(pred, self.k, dim=1)
 
+        self.sum['hitrate'] += Metrics_k.hitrate_k(target, pred).item()
+        self.sum['mrr'] += Metrics_k.mrr_k(target, pred).item()
+        self.sum['ndcg'] += Metrics_k.ndcg_k(target, pred).item()
+        self.n_samples += target.size(0)
 
     def compute(self):
         answ={'hitrate':0.0,
