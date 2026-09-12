@@ -1,0 +1,15 @@
+defaults:
+  - data: default
+  - model: sasrec
+  - train: default
+  - wandb: default
+  - _self_
+
+seed: 42
+device: cuda 
+
+hydra:
+  job:
+    chdir: true   
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

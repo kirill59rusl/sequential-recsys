@@ -1,0 +1,2 @@
+sequences_path: dataset/processed/sequences.parquet
+max_len: 50

@@ -1,5 +1,5 @@
 import polars as pl
-from preprocess import k_core_filter
+from src.data.preprocess import k_core_filter
 
 def print_quantiles(df,col,describe):
     uq50=df[col].quantile(0.5) 

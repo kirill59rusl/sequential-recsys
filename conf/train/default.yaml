@@ -1,0 +1,10 @@
+batch_size: 128
+val_batch_size: 256
+lr: 1e-3
+weight_decay: 1e-4
+num_epochs: 10
+k: 10
+early_stopping_patience: 3
+ckpt_dir: checkpoints
+num_items: 0
+num_workers: 6
