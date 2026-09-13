@@ -1,2 +1,4 @@
 sequences_path: dataset/processed/sequences.parquet
 max_len: 50
+k_core: 3
+session_gap: 30

@@ -1,4 +1,9 @@
+from pathlib import Path
 import polars as pl
+
+import hydra
+from hydra.utils import get_original_cwd
+from omegaconf import DictConfig, OmegaConf
 
 
 def sessionize(lf:pl.LazyFrame,gap:int=30):
@@ -47,15 +52,18 @@ def k_core_filter(lf: pl.LazyFrame ,k: int=5,verbose:bool=False):
     return df.lazy()
 
 
-def encode_ids(lf:pl.LazyFrame,col='visitorid',name='user_id'):
+def encode_ids(lf:pl.LazyFrame,col='visitorid',name='user_id',artifact_dir: Path = None):
     mapping=(lf.select(col)
         .unique()
         .sort(col)
         .with_row_index(name,offset=1)
     )
     #сохраняем кодировку в parquet file
-    to_save=mapping.collect()
-    to_save.write_parquet("dataset/artifact/"+name+'.parquet')
+    to_save = mapping.collect()
+
+    artifact_dir = artifact_dir or Path("dataset/artifact")
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    to_save.write_parquet(artifact_dir / f"{name}.parquet")
     return lf.join(mapping, on=col)
 
 def encode_gap(lf:pl.LazyFrame):
@@ -88,23 +96,36 @@ def encode_action(lf:pl.LazyFrame,mapping=EVENT_MAP):
     return dfc
 
 
-def build_dataset(lf:pl.LazyFrame):
-    
-    lf=k_core_filter(lf,k=3).drop("transactionid")
-    lf=sessionize(lf)
-    lf=encode_ids(lf).drop('visitorid')
-    lf=encode_ids(lf,'itemid','item_id').drop('itemid')
-    lf=encode_gap(lf)
-    lf=encode_action(lf)
-    df=lf.collect()
-    return df
+def build_dataset(
+    lf: pl.LazyFrame,
+    k_core: int = 3,
+    session_gap: int = 30,
+):
+    lf = k_core_filter(lf, k=k_core).drop("transactionid")
+    lf = sessionize(lf, gap=session_gap)
+    lf = encode_ids(lf).drop("visitorid")
+    lf = encode_ids(lf, "itemid", "item_id").drop("itemid")
+    lf = encode_gap(lf)
+    lf = encode_action(lf)
+    return lf.collect()
 
+@hydra.main(
+    version_base=None,
+    config_path="../../conf", 
+    config_name="config",
+)
+def main(cfg: DictConfig):
+    root = Path(get_original_cwd())
 
-def main():
+    events = pl.scan_csv(root / "dataset/raw/events.csv")
 
-    events=pl.scan_csv("dataset/raw/events.csv")
-    events=build_dataset(events)
-    events.write_parquet("dataset/processed/full_data.parquet")
+    events = build_dataset(
+        events,
+        k_core=cfg.data.k_core,
+        session_gap=cfg.data.session_gap,
+    )
+
+    events.write_parquet(root / "dataset/processed/full_data.parquet")
 
 if __name__=='__main__':
     main()
