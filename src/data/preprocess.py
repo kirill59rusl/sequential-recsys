@@ -52,7 +52,7 @@ def k_core_filter(lf: pl.LazyFrame ,k: int=5,verbose:bool=False):
     return df.lazy()
 
 
-def encode_ids(lf:pl.LazyFrame,col='visitorid',name='user_id',artifact_dir: Path = None):
+def encode_ids(lf:pl.LazyFrame,col='visitorid',name='user_id',artifact_dir = None):
     mapping=(lf.select(col)
         .unique()
         .sort(col)
