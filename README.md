@@ -14,7 +14,32 @@
 | `category_tree.csv` | иерархия категорий товаров |
 | `item_properties_part1.csv`, `item_properties_part2.csv` | свойства товаров (могут изменяться во времени) |
 
-Скачайте датасет с Kaggle и поместите CSV-файлы в `dataset/raw/` перед запуском пайплайна.
+### Скачивание
+
+Сначала склонируйте проект.
+
+Датасет лежит только на Kaggle и требует авторизации через Kaggle API. Настройка(после клонирования проекта):
+ 
+1. Зарегистрируйтесь на [kaggle.com](https://www.kaggle.com), перейдите в `Account -> Settings -> API -> Create New Token`.
+2. Скопируйте `.env.example` в `.env` и впишите туда эти значения:
+```bash
+   cp .env.example .env
+```
+```
+   KAGGLE_USERNAME=ваш_логин
+   KAGGLE_KEY=ваш_ключ
+```
+   `.env` уже в `.gitignore` и никогда не попадёт в git.
+3. Примите правила датасета на его [странице на Kaggle](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset) (без этого API вернёт 403 даже с валидным токеном).
+ 
+После этого структура папок и сам датасет создаются одной командой:
+ 
+```bash
+uv run python -m src.data.download
+```
+ 
+Скрипт создаёт `dataset/{raw,processed,artifact}` и скачивает 4 CSV-файла в `dataset/raw/`. Повторный запуск не перекачивает файлы, если они уже на месте (флаг `--force` — перекачать, `--skip-download` — только создать папки).
+ 
 
 ## Структура проекта
 
@@ -69,6 +94,8 @@ git clone https://github.com/kirill59rusl/sequential-recsys.git
 cd sequential-recsys
 uv sync
 ```
+
+Затем скачивайте датасет(выше).
 
 ## Запуск
 
