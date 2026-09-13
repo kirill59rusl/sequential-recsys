@@ -6,7 +6,6 @@ from src.utils.metrics import Metrics_k
 
 
 class NegativeSampler:
-    
     def __init__(self, num_items):
         self.num_items = num_items
 
@@ -27,7 +26,7 @@ def train_epoch(model, loader, optimizer, device):
         mask = batch["mask"].to(device)
 
         optimizer.zero_grad()
-        logits = model(item_seq, mask)[:, -1, :]
+        logits = model.last_logits(item_seq, mask)
         loss = F.cross_entropy(logits, target)
         loss.backward()
         optimizer.step()
@@ -48,7 +47,7 @@ def evaluate(model, loader, device, k=10):
         target = batch["target"].to(device)
         mask = batch["mask"].to(device)
 
-        logits = model(item_seq, mask)[:, -1, :]
+        logits = model.last_logits(item_seq, mask)
         loss = F.cross_entropy(logits, target)
 
         total_loss += loss.item()

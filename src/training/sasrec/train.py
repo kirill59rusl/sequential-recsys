@@ -26,6 +26,11 @@ def main(cfg: DictConfig):
     set_seed(cfg.seed)
     device = cfg.device if (cfg.device == "cuda" and torch.cuda.is_available()) else "cpu"
 
+    if device == "cpu":
+        num_workers_cfg = cfg.train.get("num_workers", 0)
+        # оставляем часть ядер под DataLoader-воркеры, остальные - под BLAS/matmul
+        torch.set_num_threads(max(1, (os.cpu_count() or 1) - num_workers_cfg))
+
     os.environ["WANDB_MODE"] = cfg.wandb.mode
     wandb.init(
         project=cfg.wandb.project,
@@ -50,26 +55,32 @@ def main(cfg: DictConfig):
         model.parameters(), lr=cfg.train.lr, weight_decay=cfg.train.weight_decay
     )
 
+    num_workers = cfg.train.get("num_workers", 0)
+    persistent = num_workers > 0
+
     train_loader = DataLoader(
         SequenceDataset(df, max_len=cfg.model.max_len, mode="train"),
         batch_size=cfg.train.batch_size,
-        num_workers=cfg.train.num_workers,
         shuffle=True,
         collate_fn=collate_fn,
+        num_workers=num_workers,
+        persistent_workers=persistent,
     )
     val_loader = DataLoader(
         SequenceDataset(df, max_len=cfg.model.max_len, mode="val"),
         batch_size=cfg.train.val_batch_size,
-        num_workers=cfg.train.num_workers,
         shuffle=False,
         collate_fn=collate_fn,
+        num_workers=num_workers,
+        persistent_workers=persistent,
     )
     test_loader = DataLoader(
         SequenceDataset(df, max_len=cfg.model.max_len, mode="test"),
         batch_size=cfg.train.val_batch_size,
-        num_workers=cfg.train.num_workers,
         shuffle=False,
         collate_fn=collate_fn,
+        num_workers=num_workers,
+        persistent_workers=persistent,
     )
 
     os.makedirs(cfg.train.ckpt_dir, exist_ok=True)

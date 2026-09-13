@@ -13,3 +13,4 @@ wheels/
 
 # Cash files
 outputs/
+clear_cash.py
